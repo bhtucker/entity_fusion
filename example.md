@@ -1,5 +1,13 @@
 
-# Solution Walkthrough
+# Example Walkthrough
+
+
+##Overview
+The input data are the names of real estate brokers, the deals they've participated in, the brokerage IDs associated with these deals, and the names of these brokerages.
+
+Below I'll show how you
+
+##The Problem
 
 Consider the deals submitted by Armand Tiano:
 
@@ -38,6 +46,8 @@ Here we see that there are 9 deals associated with Tiano. By glancing at the rea
 
 Because comps are driving linkage from brokers to firms, I'm only considering names attributed to deals in this dataset. I could (but didn't) use these multi-broker ID records to infer who Armand's colleagues are and add them to the list.
 
+
+##String Clustering
 From the set of single-person broker names that were associated with comps, I grouped these names based on their trigram signature. 
 
 ```
@@ -101,7 +111,9 @@ comps=# select * from broker_cluster_comps bc
 
 ```
 
-These are aggregated under each brokerage's "best name":
+
+##From Aliases to Entities
+We can aggregate these links under each brokerage's "best name" and get a weighted edge from a broker entity to various brokerage entities:
 
 
 ```
@@ -141,7 +153,7 @@ comps=# select * from output where broker_name like 'Armand%Tiano';
 In fact, had we not also included the two deals by Armand J. Tiano that were linked to "Cornish & Carey", we wouldn't have identified "Cornish & Carey" as a better firm name for Tiano than "Newmark Cornish & Carey", so the clustering on both sides contributes to solution quality.
 
 
-###Potential revisions:
+##Potential revisions:
 
 * Trigrams are a good general purpose grouping tool, but when used alone they are not sensitive to various other informative features. For instance, identifying low-information "real estate" words or very common first names is not done in a programmatic way here. Further, whether two broker names are associated with similar brokerages was not incorporated into their name groupings (or the inverse re: brokerage names appearing to have similar staff).
 * Information about the comps themselves would also improve the system: the barrier to linking a Staten-Island-only name to a Queens-only name should be higher than names associated with similar deals.
